@@ -1,4 +1,8 @@
 import React from 'react';
+import { connect } from 'react-redux';
+import * as courseActions from '../../redux/actions/courseActions';
+import PropTypes from 'prop-types';
+import { bindActionCreators } from 'redux';
 
 class CoursesPage extends React.Component {
   constructor(props) {
@@ -22,7 +26,11 @@ class CoursesPage extends React.Component {
 
   handleSubmit = event => {
     event.preventDefault();
-    alert(this.state.course.title);
+    // debugger;
+    // if we omit mapDispatchToProps, the component gets a dispatch prop injected automatically
+    // you have to dispatch an Action
+    // this.props.dispatch(courseActions.createCourse(this.state.course));
+    this.props.actions.createCourse(this.state.course);
   };
 
   render() {
@@ -32,9 +40,38 @@ class CoursesPage extends React.Component {
         <h3>Add Course</h3>
         <input type="text" onChange={this.handleChange} value={this.state.course.title} />
         <input type="submit" value="Save" />
+        {this.props.courses.map(course => (
+          <div key={course.title}>{course.title}</div>
+        ))}
       </form>
     );
   }
 }
 
-export default CoursesPage;
+// this resolves the expectation of dispatch on props
+CoursesPage.propTypes = {
+  courses: PropTypes.array.isRequired,
+  actions: PropTypes.object.isRequired
+  // dispatch: PropTypes.func.isRequired
+};
+
+// this func decides what state is passed to our componnet via props
+function mapStateToProps(state, ownProps) {
+  // debugger;
+  return {
+    courses: state.courses
+  };
+}
+
+// mapDispatchToProps declare what actions to pass to our component via props
+function mapDispatchToProps(dispatch) {
+  return {
+    // createCourse: course => dispatch(courseActions.createCourse(course))
+    actions: bindActionCreators(courseActions, dispatch)
+  };
+}
+
+const connectedStateAndProps = connect(mapStateToProps, mapDispatchToProps);
+export default connectedStateAndProps(CoursesPage);
+
+// or an one-liner connect(mapStateToProps, mapDispatchToProps)(CoursesPage), a call returns a call that takes CoursesPage as param

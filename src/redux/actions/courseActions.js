@@ -1,5 +1,8 @@
 // action object: {type: "type", payload Object}
-// this function is call Action Creator
+// only type is required
+// this function is called Action Creator
+import actionTypes from './actionTypes';
 export function createCourse(course) {
-  return { type: 'CREATE_COURSE', course: course };
+  // debugger;
+  return { type: actionTypes.CREATE_COURSE, course: course };
 }
